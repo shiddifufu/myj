@@ -14,14 +14,14 @@
 - 条件概率独立性假设
 多项式朴素贝叶斯假设特征（如词项）在给定类别条件下是相互独立的。即：
 
-<img src="https://github.com/cat1-a/cat/blob/master/%E5%85%AC%E5%BC%8F1.png" width="200" >
+$$P(w_1, w_2, \ldots, w_n \mid C) = \prod_{i=1}^n P(w_i \mid C)$$
 
 其中 wi​ 表示词项，C表示类别。尽管现实中词项间存在关联，但这一简化假设显著降低了计算复杂度。
 
 - 贝叶斯定理的应用形式
 对于邮件分类任务，计算后验概率 P(C∣邮件内容)，选择最大概率的类别：
 
-<img src="https://github.com/cat1-a/cat/blob/master/%E5%85%AC%E5%BC%8F2.png" width="200" >
+$$C_{\mathrm{pred}} = \arg\max_{C} \left[ P(C) \prod_{w \in \mathrm{Biff}\uparrow} P(w \mid C) \right]$$
 
 P(C)：类别的先验概率（训练集中类别占比）。
 P(w∣C)：词项 ww 在类别 C 中的条件概率（通过词频统计 + 拉普拉斯平滑计算）。
@@ -34,7 +34,10 @@ P(w∣C)：词项 ww 在类别 C 中的条件概率（通过词频统计 + �
 ## 特征构建过程
 - 方法对比
 
-<img src="https://github.com/cat1-a/cat/blob/master/%E5%85%AC%E5%BC%8F3.png" width="500" >
+| 方法          | 数学表达式                                                                 | 实现差异                                                                 |
+|---------------|--------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| **高频词特征** | 选择词频 Top-N 的词作为特征，特征值为词频：$\mathrm{Count}(w)$            | 使用 `CountVectorizer(max_features=M)` 直接统计词频                          |
+| **TF-IDF**    | 特征值为词频 × 逆文档频率：$\mathrm{TF\text{-}IDF}(w) = \mathrm{TF}(w) \times \log\frac{N}{\mathrm{DF}(w)+1}$ | 使用 `TfidfVectorizer` 自动加权，或手动计算 IDF 后加权                          |
 
 - 核心差异
 高频词：侧重区分高频词与低频词，可能受常见词（如“的”“是”）干扰。
